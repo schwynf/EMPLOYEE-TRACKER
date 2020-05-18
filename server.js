@@ -4,7 +4,6 @@ const inquirer = require("inquirer");
 const arrayList = require("./objec.js");
 const cTable = require("console.table")
 
-let info;
 let p;
 const main = async () => {
     try {
@@ -56,87 +55,53 @@ let start = async (connection) => {
             }
             if (choiceIndex < 4) {
                 await firstFour(connection, choiceIndex);
-            }else if(choiceIndex === 4){
-                await fifthResponse(connection,choiceIndex);
-            }else if(choiceIndex === 5){
-                await sixthResponse(connection,choiceIndex);
+            } else if (choiceIndex === 4 || choiceIndex === 5) {
+                await fifthResponse(connection, choiceIndex);
             }
-
-
         });
 };
-
-
-const readCar = async (connection, y) => {
-    const sqlQuery = y;
-    const [rows, fields] = await connection.query(sqlQuery);
-    console.table(rows);
-    start(connection);
-};
-
-const updateProduct = async (connection, y, x) => {
-    console.log("updating.......")
-    const sqlQuery = y;
-    const params = x;
-    const [rows, fields] = await connection.query(sqlQuery, params);
-    console.table(rows);
-    start(connection);
-}
-main();
-
-
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//reading
 async function firstFour(connection, choiceIndex) {
     await connection.query('SELECT * FROM department', async function (err, res) {
         if (err) throw err;
         p = await arrayList[choiceIndex].pick(res);
-        if (p.index === 1) {
-            p.sqlScript = `SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name, roles.salary FROM employee INNER JOIN roles ON (employee.role_id = roles.id) INNER JOIN department ON (roles.department_id = department.id) WHERE (roles.department_id = ${p.employeeTitle})`;
-        }
-        await readCar(connection, p.sqlScript);
-    })
-}
+        await readTable(connection, p.sqlScript);
+    });
+};
 
+const readTable = async (connection, script) => {
+    console.log(script);
+    console.log("reading........")
+    const sqlQuery = script;
+    const [rows, fields] = await connection.query(sqlQuery);
+    console.table(rows);
+    start(connection);
+};
+////////////////////////////////////////////////
+///////////////////////////////////////////////
+//updataing
 async function fifthResponse(connection, choiceIndex) {
     await connection.query('SELECT * FROM roles', async function (err, res) {
         if (err) throw err;
-        console.log(choiceIndex);
         p = await arrayList[choiceIndex].pick(res);
         console.log(p);
-        await updateProduct(connection,p.sqlScript,p.saveParam);
-    })
-}
+        await updateTable(connection, p.sqlScript, p.saveParam);
+    });
+};
 
-async function sixthResponse(connection, choiceIndex) {
-    await connection.query('SELECT * FROM roles', async function (err, res) {
-        if (err) throw err;
-        console.log(choiceIndex);
-        p = await arrayList[choiceIndex].pick(res);
-        console.log(p);
-        await updateProduct( connection,p.sqlScript,p.saveParam); 
-    })
-}
+const updateTable = async (connection, script, values) => {
+    console.log("updating.......")
+    const sqlQuery = script;
+    const params = values;
+    const [rows, fields] = await connection.query(sqlQuery, params);
+    console.table(rows);
+    start(connection);
+};
 
-// let info;
-// let p;
-// const main = async () => {
-//     let x = "\'CustomerService\'";
-//     let y = 25;
-//     try {
-//         var connection = await mysql.createConnection({
-//             host: "localhost",
-//             port: 3306,
-//             user: "root",
-//             password: "password",
-//             database: "personnel_DB"
-//         });
-//         console.log("connected as id " + colors.magenta(connection.threadId));
-//         const [rows, fields] = await connection.query(`UPDATE roles
-//         SET title=${x}, salary=${y}
-//         WHERE id=3;`);
-//         connection.end();
-//     } catch (err) {
-//         console.log(err);
-//     }
-// };
-// main();
+main();
+
+
+
 

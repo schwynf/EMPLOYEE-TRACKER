@@ -1,8 +1,8 @@
 const inquirer = require("inquirer");
 const colors = require("colors");
-let idChoice;
 
-let info;
+
+
 let exportArray =
     [
         {
@@ -15,9 +15,8 @@ let exportArray =
         },
         {
             choice: "View All Employees by Department",
-            employeeTitle: "",
-            role: [1, 2, 3],
-            sqlScript: `SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name, roles.salary FROM employee INNER JOIN roles ON (employee.role_id = roles.id) INNER JOIN department ON (roles.department_id = department.id) WHERE (roles.department_id = ${this.employeeTitle})`,
+            deptID: '',
+            sqlScript: '',
             index: 1,
             pick: async function (res) {
                 await inquirer
@@ -26,8 +25,8 @@ let exportArray =
                         name: "pickDepartment"
 
                     }).then((data) => {
-                        this.employeeTitle = JSON.parse(data.pickDepartment);
-                        info = exportArray[1];
+                        this.deptID = data.pickDepartment;
+                        this.sqlScript = `SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name, roles.salary FROM employee INNER JOIN roles ON (employee.role_id = roles.id) INNER JOIN department ON (roles.department_id = department.id) WHERE (roles.department_id = ${this.deptID})`;
                     });
                 return exportArray[1];
             }
@@ -53,7 +52,6 @@ let exportArray =
             choice: "Update Employee Role",
             sqlScript: "UPDATE employee SET ? WHERE ? AND ?",
             saveParam: [],
-            role: [],
             index: 4,
             pick: async function (res) {
                 let info;
@@ -83,21 +81,19 @@ let exportArray =
             choice: "Update Role?",
             sqlScript: "UPDATE roles SET ?, ? WHERE ?",
             saveParam: [],
-            role: [],
             index: 5,
             pick: async function (res) {
-                let info;
                 await inquirer
                     .prompt([
                         {
 
                             message: "Which role do you wish to update, choose id " + JSON.stringify(res, null, 2),
-                            name: "oldTitle",
+                            name: "roleID",
 
                         },
                         {
                             message: "What is the new role title?",
-                            name: "newTitle"
+                            name: "roleTitle"
                         },
                         {
                             message: "What is the new role salary?",
@@ -106,9 +102,9 @@ let exportArray =
 
                     ]).then((data) => {
                         data.roleSalary = JSON.parse(data.roleSalary);
-                        data.oldTitle = JSON.parse(data.oldTitle);
+                        data.roleID = JSON.parse(data.roleID);
 
-                        this.saveParam = [{ title: data.newTitle }, { salary: data.roleSalary }, { id: data.oldTitle }];
+                        this.saveParam = [{ title: data.roleTitle }, { salary: data.roleSalary }, { id: data.roleID }];
                     });
                 return exportArray[5];
             }
@@ -118,13 +114,4 @@ let exportArray =
 module.exports = exportArray;
 
 
-// let x = data.newTitle
-// x.split("");
-// for (let i = 0; i < x.length; i++) {
-//     if (x[i] === "\"") {
-//         x.splice(i, 1, "\'");
-//     }
-// }
-// data.newTitle = x.join(",")
-// data.roleSalary = JSON.parse(data.roleSalary);
-// data.oldTitle = JSON.parse(data.oldTitle);
+
