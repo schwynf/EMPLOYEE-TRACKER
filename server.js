@@ -74,10 +74,8 @@ async function getEmployee(connection, choiceIndex) {
     await connection.query('SELECT * FROM employee', async function (err, res) {
         if (err) throw err;
         p = await arrayList[choiceIndex].pick(res);
-        if (p.index === 9) {
-            console.log(p);
-            await removeTable(connection, p.sqlScript, p.saveParam);
-        }
+        console.log(p);
+        await removeTable(connection, p.sqlScript, p.saveParam);
     });
 };
 
@@ -106,7 +104,8 @@ async function getDepartment(connection, choiceIndex) {
 async function getRoles(connection, choiceIndex) {
     await connection.query('SELECT * FROM roles', async function (err, res) {
         if (err) throw err;
-        p = await arrayList[choiceIndex].pick(res);
+        const [rows, fields] = await connection.query('SELECT * FROM department');
+        p = await arrayList[choiceIndex].pick(res,rows);
         console.log(p);
         if (p.index === 7) {
             await addTable(connection, p.sqlScript, p.saveParam);
