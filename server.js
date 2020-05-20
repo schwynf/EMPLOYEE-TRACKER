@@ -36,11 +36,11 @@ let start = async (connection) => {
                 arrayList[3].choice,
                 arrayList[4].choice,
                 arrayList[5].choice,
-                "Add Role",
-                "Add Employee",
-                "Add Department",
-                "Remove Employee",
-                "Remove Role",
+                arrayList[6].choice,
+                arrayList[7].choice,
+                arrayList[8].choice,
+                arrayList[9].choice,
+                arrayList[10].choice,
                 "Remove Department",
                 "Total Utilized Budget by Department",
                 "Exit"
@@ -53,44 +53,90 @@ let start = async (connection) => {
                     choiceIndex = i;
                 }
             }
-            if (choiceIndex < 4) {
-                await firstFour(connection, choiceIndex);
-            } else if (choiceIndex === 4 || choiceIndex === 5) {
-                await fifthResponse(connection, choiceIndex);
+            if (choiceIndex < 4 || choiceIndex === 6 || choiceIndex === 8 || choiceIndex === 11) {
+                await getDepartment(connection, choiceIndex);
+            } else if (choiceIndex === 4 || choiceIndex === 5 || choiceIndex === 7 || choiceIndex === 10) {
+                await getRoles(connection, choiceIndex);
+            }else if(choiceIndex === 9){
+                await getEmployee(connection, choiceIndex);
+            }else if(choiceIndex === 13){
+                connection.end();
             }
         });
 };
-//////////////////////////////////////////////
-//////////////////////////////////////////////
-//reading
-async function firstFour(connection, choiceIndex) {
-    await connection.query('SELECT * FROM department', async function (err, res) {
+////////////////////////////////////
+/////////////////////////////////
+//get employee view
+async function getEmployee(connection, choiceIndex) {
+    await connection.query('SELECT * FROM employee', async function (err, res) {
         if (err) throw err;
         p = await arrayList[choiceIndex].pick(res);
-        await readTable(connection, p.sqlScript);
+        if(p.index === 9){
+            console.log(p);
+            await removeTable(connection, p.sqlScript,p.saveParam);
+        }
     });
 };
 
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+//get Department table to help enter information
+async function getDepartment(connection, choiceIndex) {
+    await connection.query('SELECT * FROM department', async function (err, res) {
+        if (err) throw err;
+        p = await arrayList[choiceIndex].pick(res);
+        if(p.index < 4){
+            await readTable(connection, p.sqlScript);
+        }else if(p.index === 11){
+            console.log(p);
+            await removeTable(connection, p.sqlScript, p.saveParam);
+        }else{
+            console.log(p);
+            await addTable(connection, p.sqlScript, p.saveParam);
+        }
+    });
+};
+
+////////////////////////////////////////////////
+///////////////////////////////////////////////
+//get Roles table to help enter information
+async function getRoles(connection, choiceIndex) {
+    await connection.query('SELECT * FROM roles', async function (err, res) {
+        if (err) throw err;
+        p = await arrayList[choiceIndex].pick(res);
+        console.log(p);
+        if(p.index === 7){
+            await addTable(connection,p.sqlScript,p.saveParam);
+        }else if(p.index === 10){
+            await removeTable(connection,p.sqlScript,p.saveParam);
+        }else{
+            await updateTable(connection, p.sqlScript, p.saveParam);
+        }
+        
+    });
+};
+
+//reading specific information from mySQL database
 const readTable = async (connection, script) => {
-    console.log(script);
+    console.log(colors.bgGreen.red.bold(script));
     console.log("reading........")
     const sqlQuery = script;
     const [rows, fields] = await connection.query(sqlQuery);
     console.table(rows);
     start(connection);
 };
-////////////////////////////////////////////////
-///////////////////////////////////////////////
-//updataing
-async function fifthResponse(connection, choiceIndex) {
-    await connection.query('SELECT * FROM roles', async function (err, res) {
-        if (err) throw err;
-        p = await arrayList[choiceIndex].pick(res);
-        console.log(p);
-        await updateTable(connection, p.sqlScript, p.saveParam);
-    });
+
+//adding information into mySQL database
+const addTable = async (connection,script,values) => {
+    console.log("adddingggg.......")
+    const sqlQuery = script;
+    const params = values;
+    const [rows, fields] = await connection.query(sqlQuery);
+    console.table(rows);
+    start(connection);
 };
 
+//updating information into mySQL database
 const updateTable = async (connection, script, values) => {
     console.log("updating.......")
     const sqlQuery = script;
@@ -100,6 +146,15 @@ const updateTable = async (connection, script, values) => {
     start(connection);
 };
 
+//removing information from mySQL database
+const removeTable = async (connection, script, values) => {
+    console.log("removing.......")
+    const sqlQuery = script;
+    const params = values;
+    const [rows, fields] = await connection.query(sqlQuery, params);
+    console.table(rows);
+    start(connection);
+};
 main();
 
 

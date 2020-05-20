@@ -136,4 +136,59 @@
 //     connection.end();
 // })
 
+const mysql = require("mysql2/promise");
+
+
+const main = async () => {
+    try {
+        var connection = await mysql.createConnection({
+            host: "localhost",
+            port: 3306,
+            user: "root",
+            password: "password",
+            database: "icecream_DB"
+        });
+        console.log("connected as id " + connection.threadId);
+        await readProduct(connection);
+        await createProduct(connection);
+        await updateProduct(connection);
+        await deleteProduct(connection);
+        connection.end();
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const readProduct = async (connection) => {
+    const [rows, fields] = await connection.query("SELECT * FROM products");
+    console.log(rows);
+}
+
+const createProduct = async (connection) => {
+    const sqlQuery = "INSERT INTO products SET ?";
+    const params = {
+        flavor: "cherry",
+        price: 5.60,
+        quantity: 40
+    }
+    const [rows, fields] = await connection.query(sqlQuery, params);
+    console.log(rows);
+}
+const updateProduct = async (connection) => {
+    console.log("updating.......")
+    const sqlQuery = "UPDATE products SET ? WHERE ?";
+    const params = [{ quantity: 200 }, { flavor: "cherry" }];
+
+    const [rows, fields] = await connection.query(sqlQuery, params);
+    console.log(rows);
+}
+const deleteProduct = async (connection) => {
+    console.log("deleting.......")
+    const sqlQuery = "DELETE FROM products WHERE ?";
+    const params = [ { flavor: "chocolate" }];
+
+    const [rows, fields] = await connection.query(sqlQuery, params);
+    console.log(rows);
+}
+main();
 
