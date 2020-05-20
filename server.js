@@ -54,14 +54,16 @@ let start = async (connection) => {
                 }
             }
             //checking which table view the user needs
-            if (choiceIndex < 4 || choiceIndex === 6 || choiceIndex === 8 || choiceIndex === 11) {
+            if (choiceIndex < 4 || choiceIndex === 6 || choiceIndex === 8 || choiceIndex === 11 || choiceIndex === 12) {
                 await getDepartment(connection, choiceIndex);
             } else if (choiceIndex === 4 || choiceIndex === 5 || choiceIndex === 7 || choiceIndex === 10) {
                 await getRoles(connection, choiceIndex);
-            }else if(choiceIndex === 9){
+            } else if (choiceIndex === 9) {
                 await getEmployee(connection, choiceIndex);
-            }else if(choiceIndex === 13){
+            } else if (choiceIndex === 13) {
                 connection.end();
+            } else {
+
             }
         });
 };
@@ -72,9 +74,9 @@ async function getEmployee(connection, choiceIndex) {
     await connection.query('SELECT * FROM employee', async function (err, res) {
         if (err) throw err;
         p = await arrayList[choiceIndex].pick(res);
-        if(p.index === 9){
+        if (p.index === 9) {
             console.log(p);
-            await removeTable(connection, p.sqlScript,p.saveParam);
+            await removeTable(connection, p.sqlScript, p.saveParam);
         }
     });
 };
@@ -86,12 +88,12 @@ async function getDepartment(connection, choiceIndex) {
     await connection.query('SELECT * FROM department', async function (err, res) {
         if (err) throw err;
         p = await arrayList[choiceIndex].pick(res);
-        if(p.index < 4){
+        if (p.index < 4 || p.index === 12) {
             await readTable(connection, p.sqlScript);
-        }else if(p.index === 11){
+        } else if (p.index === 11) {
             console.log(p);
             await removeTable(connection, p.sqlScript, p.saveParam);
-        }else{
+        } else {
             console.log(p);
             await addTable(connection, p.sqlScript, p.saveParam);
         }
@@ -106,14 +108,14 @@ async function getRoles(connection, choiceIndex) {
         if (err) throw err;
         p = await arrayList[choiceIndex].pick(res);
         console.log(p);
-        if(p.index === 7){
-            await addTable(connection,p.sqlScript,p.saveParam);
-        }else if(p.index === 10){
-            await removeTable(connection,p.sqlScript,p.saveParam);
-        }else{
+        if (p.index === 7) {
+            await addTable(connection, p.sqlScript, p.saveParam);
+        } else if (p.index === 10) {
+            await removeTable(connection, p.sqlScript, p.saveParam);
+        } else {
             await updateTable(connection, p.sqlScript, p.saveParam);
         }
-        
+
     });
 };
 
@@ -124,11 +126,18 @@ const readTable = async (connection, script) => {
     const sqlQuery = script;
     const [rows, fields] = await connection.query(sqlQuery);
     console.table(rows);
+    if (p.index === 12) {
+        let total = 0;
+        for (let i = 0; i < rows.length; i++) {
+            total += JSON.parse(rows[i].salary);
+        }
+        console.log(`The total utilized budget is $${total}.`);
+    }
     start(connection);
 };
 
 //adding information into mySQL database
-const addTable = async (connection,script,values) => {
+const addTable = async (connection, script, values) => {
     console.log("adddingggg.......")
     const sqlQuery = script;
     const params = values;
@@ -157,7 +166,3 @@ const removeTable = async (connection, script, values) => {
     start(connection);
 };
 main();
-
-
-
-

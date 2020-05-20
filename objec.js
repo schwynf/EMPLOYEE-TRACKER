@@ -1,3 +1,5 @@
+
+
 const inquirer = require("inquirer");
 const colors = require("colors");
 
@@ -172,12 +174,8 @@ let exportArray =
                         }
                     ])
                     .then((data) => {
-                        let x = data.roleID;
-                        let y = data.roleTitle;
-                        let z = data.roleSalary;
-                        let w = data.roleDeptID;
                         this.sqlScript =  `INSERT INTO employee (id, first_name, last_name, role_id) VALUES (${data.employeeID},\'${data.employeeFirst}\', \'${data.employeeLast}\', ${data.roleDeptID});`
-                        this.saveParam = [data.roleDeptID,data.roleTitle,data.roleSalary,data.roleDeptID];
+                        this.saveParam = [data.employeeID,data.employeeFirst,data.employeeLast,data.roleDeptID];
                         console.log(this.saveParam);
                     });
                     return exportArray[7];
@@ -250,9 +248,6 @@ let exportArray =
                     return exportArray[10];
             }
         },
-        //////////////////////
-        //////////////////////////
-        ////////////////////////
         {
             choice: "Remove Department",
             sqlScript: "",
@@ -273,6 +268,34 @@ let exportArray =
                     });
                     return exportArray[11];
             }
+        },
+        ////////////////////////
+        ////////////////////
+        /////////////////////
+        {
+            choice: "Total Utilized Budget by Department",
+            sqlScript: "",
+            saveParam: [],
+            index: 12,
+            pick: async function (res) {
+               await  inquirer
+                    .prompt([
+                        {
+                            message: "Enter Deptmartment ID \n" + JSON.stringify(res, null, 2),
+                            name: "deptID"
+                        }
+                    ])
+                    .then((data) => {
+                        data.deptID = JSON.parse(data.deptID);
+                        this.sqlScript =  `SELECT employee.id, employee.first_name, employee.last_name, roles.title, roles.salary, department.name FROM employee INNER JOIN roles ON (employee.role_id = roles.id) INNER JOIN department ON (roles.department_id = department.id) WHERE department_id = ${data.deptID}`;
+                        this.saveParam = [{id: data.deptID}];
+                    });
+                    return exportArray[12];
+            }
+        },
+        {
+            choice: "Exit"
+
         }
     ];
 
