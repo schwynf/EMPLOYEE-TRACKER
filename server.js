@@ -41,9 +41,9 @@ let start = async (connection) => {
                 arrayList[8].choice,
                 arrayList[9].choice,
                 arrayList[10].choice,
-                "Remove Department",
+                arrayList[11].choice,
                 "Total Utilized Budget by Department",
-                "Exit"
+                arrayList[13].choice
             ]
         })
         .then(async (data) => {
@@ -53,6 +53,7 @@ let start = async (connection) => {
                     choiceIndex = i;
                 }
             }
+            //checking which table view the user needs
             if (choiceIndex < 4 || choiceIndex === 6 || choiceIndex === 8 || choiceIndex === 11) {
                 await getDepartment(connection, choiceIndex);
             } else if (choiceIndex === 4 || choiceIndex === 5 || choiceIndex === 7 || choiceIndex === 10) {
@@ -66,7 +67,7 @@ let start = async (connection) => {
 };
 ////////////////////////////////////
 /////////////////////////////////
-//get employee view
+//get employee table to help user enter information
 async function getEmployee(connection, choiceIndex) {
     await connection.query('SELECT * FROM employee', async function (err, res) {
         if (err) throw err;
@@ -80,7 +81,7 @@ async function getEmployee(connection, choiceIndex) {
 
 //////////////////////////////////////////////
 //////////////////////////////////////////////
-//get Department table to help enter information
+//get department table to help user enter information
 async function getDepartment(connection, choiceIndex) {
     await connection.query('SELECT * FROM department', async function (err, res) {
         if (err) throw err;
@@ -99,7 +100,7 @@ async function getDepartment(connection, choiceIndex) {
 
 ////////////////////////////////////////////////
 ///////////////////////////////////////////////
-//get Roles table to help enter information
+//get roles table to help user enter information
 async function getRoles(connection, choiceIndex) {
     await connection.query('SELECT * FROM roles', async function (err, res) {
         if (err) throw err;
