@@ -22,7 +22,7 @@ This is a content management system that allows users to interact with informati
 <ul>
     <li>Use schema.sql and seed.sql for mySQL database startup.</li>
 </ul>
-![](./video/readme.gif)<br>
+![](./video/Capture.JPG)<br>
  
 ## License <span id="l"></span> 
 None 
