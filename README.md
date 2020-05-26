@@ -19,7 +19,7 @@ This is a content management system that allows users to interact with informati
  <br>
 
 ## Usage <span id="u"></span> 
-![](./video/readme.gif)<br>
+![](./video/read.gif)<br>
 <ul>
     <li>Use schema.sql and seed.sql for mySQL database startup.</li>
 </ul>
