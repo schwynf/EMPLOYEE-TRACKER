@@ -3,7 +3,7 @@
 ![Repo Size](https://img.shields.io/github/repo-size/schwynf/EMPLOYEE-TRACKER) <br> 
 
 ## Description <span id="d"></span> 
-This is a content management system that allows users to interact with information stored in a mySQL database. It's a ready a to go solution to help a business organize it's workforce. Feel free to leave a comment negative or positive. I am always looking to improve the application.
+This is a content management system that allows users to interact with information stored in a mySQL database. It's a ready to go solution to help a business organize it's workforce. Feel free to leave a comment negative or positive. I am always looking to improve the application.
  
 ## Table of Contents 
  <ul>
