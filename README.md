@@ -17,12 +17,11 @@ This is a content management system that allows users to interact with informati
 ## Installation <span id="i"></span> 
  Fork the EMPLOYEE-TRACKER repoistory to your remote repo (Github Repository) then clone the repository to your local repo (Personal Computer).  To run application, use <code>npm install</code> in terminal to download node_modules folder. After download, type <code>node server.js</code> in terminal to begin application.
  <br>
- 
+ ![](./video/Capture.JPG)<br>
 ## Usage <span id="u"></span> 
 <ul>
     <li>Use schema.sql and seed.sql for mySQL database startup.</li>
 </ul>
-![](./video/Capture.JPG)<br>
  
 ## License <span id="l"></span> 
 None 
