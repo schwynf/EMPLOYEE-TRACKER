@@ -1,14 +1,14 @@
 const inquirer = require("inquirer");
 const colors = require("colors");
 
-let exportArray =
+let optionList =
     [
         {
             choice: "View All Employees",
             sqlScript: "SELECT * FROM employee",
             index: 0,
             pick: function () {
-                return exportArray[0];
+                return optionList[0];
             },
         },
         {
@@ -18,7 +18,7 @@ let exportArray =
             index: 1,
             pick: async function (res) {
                 console.table(res);
-                await inquirer
+               await inquirer
                     .prompt({
                         message: "Pick Id number for department:",
                         name: "pickDepartment"
@@ -27,7 +27,7 @@ let exportArray =
                         this.deptID = data.pickDepartment;
                         this.sqlScript = `SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name, roles.salary FROM employee INNER JOIN roles ON (employee.role_id = roles.id) INNER JOIN department ON (roles.department_id = department.id) WHERE (roles.department_id = ${this.deptID})`;
                     });
-                return exportArray[1];
+                    return optionList[1];
             }
 
         },
@@ -36,7 +36,7 @@ let exportArray =
             sqlScript: "SELECT roles.title, roles.salary, department.name  FROM roles INNER JOIN department ON (roles.department_id = department.id)",
             index: 2,
             pick: function () {
-                return exportArray[2];
+                return optionList[2];
             }
         },
         {
@@ -44,7 +44,7 @@ let exportArray =
             sqlScript: "SELECT * FROM department",
             index: 3,
             pick: function () {
-                return exportArray[3];
+                return optionList[3];
             }
         },
         {
@@ -52,7 +52,7 @@ let exportArray =
             sqlScript: "UPDATE employee SET ? WHERE ? AND ?",
             saveParam: [],
             index: 4,
-            pick: async function (res) {
+            pick: async function (res) {1
                 console.table(res);
                 await inquirer
                     .prompt([
@@ -73,7 +73,7 @@ let exportArray =
                     ]).then((data) => {
                         this.saveParam = [{ role_id: data.newRole }, { first_name: data.firstName }, { last_name: data.lastName }]
                     });
-                return exportArray[4];
+                    return optionList[4];
             }
         },
         {
@@ -112,7 +112,7 @@ let exportArray =
 
                         this.saveParam = [{ title: data.roleTitle },{ salary: data.roleSalary },{ department_id: data.roleDept}, { id: data.roleID }];
                     });
-                return exportArray[5];
+                    return optionList[5];
             }
         },
         {
@@ -122,7 +122,7 @@ let exportArray =
             index: 6,
             pick: async function (res) {
                 console.table(res);
-               await  inquirer
+               await inquirer
                     .prompt([
                         {
                             message: "Enter role title",
@@ -146,7 +146,7 @@ let exportArray =
                         this.saveParam = [y,z,w];
                         console.log(this.saveParam);
                     });
-                    return exportArray[6];
+                    return optionList[6];
             }
         },
         {
@@ -156,7 +156,7 @@ let exportArray =
             index: 7,
             pick: async function (res) {
                 console.table(res);
-               await  inquirer
+              await inquirer
                     .prompt([
                         {
                             message: "Enter employee first name",
@@ -175,7 +175,7 @@ let exportArray =
                         this.sqlScript =  `INSERT INTO employee (first_name, last_name, role_id) VALUES (\'${data.employeeFirst}\', \'${data.employeeLast}\', ${data.roleDeptID});`
                         this.saveParam = [data.employeeFirst,data.employeeLast,data.roleDeptID];
                     });
-                    return exportArray[7];
+                    return optionList[7];
             }
         },
         {
@@ -185,7 +185,7 @@ let exportArray =
             index: 8,
             pick: async function (res) {
                 console.table(res);
-               await  inquirer
+               await inquirer
                     .prompt([
                         {
                             message: "Enter Department Name",
@@ -197,7 +197,7 @@ let exportArray =
                         this.saveParam = [data.deptName];
                         console.log(this.saveParam);
                     });
-                    return exportArray[8];
+                    return optionList[8];
             }
         },
         {
@@ -207,7 +207,7 @@ let exportArray =
             index: 9,
             pick: async function (res) {
                 console.table(res);
-               await  inquirer
+              await inquirer
                     .prompt([
                         {
                             message: "Enter Employee ID:",
@@ -219,8 +219,8 @@ let exportArray =
                         data.employeeID = JSON.parse(data.employeeID);
                         this.saveParam = [{id: data.employeeID}];
                     });
-                    return exportArray[9];
-            }
+                    return optionList[9];
+                }
         },
         {
             choice: "Remove Role",
@@ -229,7 +229,7 @@ let exportArray =
             index: 10,
             pick: async function (res) {
                 console.table(res);
-               await  inquirer
+              await inquirer
                     .prompt([
                         {
                             message: "Enter Role ID:",
@@ -241,7 +241,7 @@ let exportArray =
                         data.roleID = JSON.parse(data.roleID);
                         this.saveParam = [{id: data.roleID}];
                     });
-                    return exportArray[10];
+                    return optionList[10];
             }
         },
         {
@@ -251,7 +251,7 @@ let exportArray =
             index: 11,
             pick: async function (res) {
                 console.table(res);
-               await  inquirer
+               await inquirer
                     .prompt([
                         {
                             message: "Enter Deptmartment ID:",
@@ -263,7 +263,7 @@ let exportArray =
                         data.deptID = JSON.parse(data.deptID);
                         this.saveParam = [{id: data.deptID}];
                     });
-                    return exportArray[11];
+                    return optionList[11];
             }
         },
         {
@@ -273,7 +273,7 @@ let exportArray =
             index: 12,
             pick: async function (res) {
                 console.table(res);
-               await  inquirer
+               await inquirer
                     .prompt([
                         {
                             message: "Enter Deptmartment ID:",
@@ -285,7 +285,7 @@ let exportArray =
                         this.sqlScript =  `SELECT employee.id, employee.first_name, employee.last_name, roles.title, roles.salary, department.name FROM employee INNER JOIN roles ON (employee.role_id = roles.id) INNER JOIN department ON (roles.department_id = department.id) WHERE department.id = ${data.deptID}`;
                         this.saveParam = [{id: data.deptID}];
                     });
-                    return exportArray[12];
+                    return optionList[12];
             }
         },
         {
@@ -294,7 +294,7 @@ let exportArray =
         }
     ];
 
-module.exports = exportArray;
+module.exports = optionList;
 
 
 

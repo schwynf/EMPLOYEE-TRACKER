@@ -2,6 +2,7 @@ DROP DATABASE IF EXISTS personnel_DB;
 CREATE DATABASE personnel_DB;
 USE personnel_DB;
 
+
 DROP TABLE employee;
 
 CREATE TABLE employee (

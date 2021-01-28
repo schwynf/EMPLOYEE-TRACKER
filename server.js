@@ -1,14 +1,14 @@
 const mysql = require("mysql2/promise");
 const colors = require("colors");
 const inquirer = require("inquirer");
-const arrayList = require("./objec.js");
-const cTable = require("console.table")
+const optionList = require("./optionList.js");
+const consoleTable = require("console.table")
+let arrayPick;
 
 
-let p;
 const main = async () => {
     try {
-        var connection = await mysql.createConnection({
+           let connection = await mysql.createConnection({
             host: "localhost",
             port: 3306,
             user: "root",
@@ -16,104 +16,99 @@ const main = async () => {
             database: "personnel_DB"
         });
         console.log("connected as id " + colors.magenta(connection.threadId));
-        await start(connection);
-        connection.end();
+        start(connection);
     } catch (err) {
         console.log(err);
     }
 };
 
+main();
 
-let start = async (connection) => {
-    await inquirer
+let start = (connection) => {
+    inquirer
         .prompt({
             type: "checkbox",
             message: "Which employee info do you wish to choose?",
             name: "userChoice",
             choices: [
-                arrayList[0].choice,
-                arrayList[1].choice,
-                arrayList[2].choice,
-                arrayList[3].choice,
-                arrayList[4].choice,
-                arrayList[5].choice,
-                arrayList[6].choice,
-                arrayList[7].choice,
-                arrayList[8].choice,
-                arrayList[9].choice,
-                arrayList[10].choice,
-                arrayList[11].choice,
-                "Total Utilized Budget by Department",
-                arrayList[13].choice
+                optionList[0].choice,
+                optionList[1].choice,
+                optionList[2].choice,
+                optionList[3].choice,
+                optionList[4].choice,
+                optionList[5].choice,
+                optionList[6].choice,
+                optionList[7].choice,
+                optionList[8].choice,
+                optionList[9].choice,
+                optionList[10].choice,
+                optionList[11].choice,
+                optionList[12].choice,
+                optionList[13].choice
             ]
         })
-        .then(async (data) => {
+        .then((data) => {
             let choiceIndex;
-            for (let i = 0; i < arrayList.length; i++) {
-                if (data.userChoice[0] === arrayList[i].choice) {
+            for (let i = 0; i < optionList.length; i++) {
+                if (data.userChoice[0] === optionList[i].choice) {
                     choiceIndex = i;
                 }
             }
             //checking which table view the user needs
             if (choiceIndex < 4 || choiceIndex === 6 || choiceIndex === 8 || choiceIndex === 11 || choiceIndex === 12) {
-                await getDepartment(connection, choiceIndex);
+                getDepartment(connection, choiceIndex);
             } else if (choiceIndex === 4 || choiceIndex === 5 || choiceIndex === 7 || choiceIndex === 10) {
-                await getRoles(connection, choiceIndex);
+                getRoles(connection, choiceIndex);
             } else if (choiceIndex === 9) {
-                await getEmployee(connection, choiceIndex);
+                getEmployee(connection, choiceIndex);
             } else if (choiceIndex === 13) {
                 connection.end();
             } else {
-
-            }
+                start(connection)
+            } 
         });
 };
-////////////////////////////////////
-/////////////////////////////////
+
 //get employee table to help user enter information
 async function getEmployee(connection, choiceIndex) {
-    await connection.query('SELECT * FROM employee', async function (err, res) {
+    connection.query('SELECT * FROM employee', async function (err, res) {
         if (err) throw err;
-        p = await arrayList[choiceIndex].pick(res);
-        console.log(p);
-        await removeTable(connection, p.sqlScript, p.saveParam);
+        arrayPick = await optionList[choiceIndex].pick(res);
+        console.log(arrayPick);
+        await removeTable(connection, arrayPick.sqlScript, arrayPick.saveParam);
     });
 };
 
-//////////////////////////////////////////////
-//////////////////////////////////////////////
 //get department table to help user enter information
 async function getDepartment(connection, choiceIndex) {
-    await connection.query('SELECT * FROM department', async function (err, res) {
+    connection.query('SELECT * FROM department', async function (err, res) {
         if (err) throw err;
-        p = await arrayList[choiceIndex].pick(res);
-        if (p.index < 4 || p.index === 12) {
-            await readTable(connection, p.sqlScript);
-        } else if (p.index === 11) {
-            console.log(p);
-            await removeTable(connection, p.sqlScript, p.saveParam);
+        arrayPick = await optionList[choiceIndex].pick(res);
+        if (arrayPick.index < 4 || arrayPick.index === 12) {
+            readTable(connection, arrayPick.sqlScript);
+        } else if (arrayPick.index === 11) {
+            console.log(arrayPick);
+            removeTable(connection, arrayPick.sqlScript, arrayPick.saveParam);
         } else {
-            console.log(p);
-            await addTable(connection, p.sqlScript, p.saveParam);
+            console.log(arrayPick);
+            addTable(connection, arrayPick.sqlScript, arrayPick.saveParam);
         }
     });
 };
 
-////////////////////////////////////////////////
-///////////////////////////////////////////////
 //get roles table to help user enter information
 async function getRoles(connection, choiceIndex) {
-    await connection.query('SELECT * FROM roles', async function (err, res) {
+        connection.query('SELECT * FROM roles', async function (err, res) {
         if (err) throw err;
         const [rows, fields] = await connection.query('SELECT * FROM department');
-        p = await arrayList[choiceIndex].pick(res,rows);
-        console.log(p);
-        if (p.index === 7) {
-            await addTable(connection, p.sqlScript, p.saveParam);
-        } else if (p.index === 10) {
-            await removeTable(connection, p.sqlScript, p.saveParam);
+        arrayPick = await optionList[choiceIndex].pick(res,rows);
+        console.log(arrayPick);
+        if (arrayPick.index === 7) {
+            addTable(connection, arrayPick.sqlScript, arrayPick.saveParam);
+        } else if (arrayPick.index === 10) {
+            removeTable(connection, arrayPick.sqlScript, arrayPick.saveParam);
         } else {
-            await updateTable(connection, p.sqlScript, p.saveParam);
+            updateTable(connection, arrayPick.sqlScript, arrayPick.saveParam);
         }
 
     });
@@ -123,10 +118,9 @@ async function getRoles(connection, choiceIndex) {
 const readTable = async (connection, script) => {
     console.log(colors.bgGreen.red.bold(script));
     console.log("reading........")
-    const sqlQuery = script;
-    const [rows, fields] = await connection.query(sqlQuery);
+    const [rows, fields] = await connection.query(script);
     console.table(rows);
-    if (p.index === 12) {
+    if (arrayPick.index === 12) {
         let total = 0;
         for (let i = 0; i < rows.length; i++) {
             total += JSON.parse(rows[i].salary);
@@ -139,30 +133,24 @@ const readTable = async (connection, script) => {
 //adding information into mySQL database
 const addTable = async (connection, script, values) => {
     console.log("adddingggg.......")
-    const sqlQuery = script;
-    const params = values;
-    const [rows, fields] = await connection.query(sqlQuery);
-    console.table(rows);
+    const [rows, fields] = await connection.query(script);
+    console.log(rows);
     start(connection);
 };
 
 //updating information into mySQL database
 const updateTable = async (connection, script, values) => {
     console.log("updating.......")
-    const sqlQuery = script;
-    const params = values;
-    const [rows, fields] = await connection.query(sqlQuery, params);
+    const [rows, fields] = await connection.query(script, values);
     console.table(rows);
     start(connection);
 };
 
 //removing information from mySQL database
 const removeTable = async (connection, script, values) => {
-    console.log("removing.......")
-    const sqlQuery = script;
-    const params = values;
-    const [rows, fields] = await connection.query(sqlQuery, params);
+    console.log("removing.......");
+    const [rows, fields] = await connection.query(script, values);
     console.table(rows);
     start(connection);
 };
-main();
+
